@@ -1,6 +1,6 @@
+import os
 from flask import Flask, render_template, request, jsonify
 import json
-import os
 import time
 from datetime import datetime
 
@@ -20,7 +20,24 @@ CONFIG_FILE = 'system_config.json'
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    try:
+        return render_template('index.html')
+    except Exception as e:
+        return f"""
+        <html>
+            <head><title>Auto Traffic System</title></head>
+            <body>
+                <h1>Auto Traffic System</h1>
+                <p>System is running. Template issue: {str(e)}</p>
+                <p>Current directory: {os.getcwd()}</p>
+                <p>Files in directory: {os.listdir('.')}</p>
+                <p>Templates exists: {os.path.exists('templates')}</p>
+                {% if os.path.exists('templates') %}
+                <p>Files in templates: {os.listdir('templates')}</p>
+                {% endif %}
+            </body>
+        </html>
+        """, 500
 
 @app.route('/api/config/save', methods=['POST'])
 def save_config():
@@ -151,4 +168,5 @@ if __name__ == '__main__':
     os.makedirs('chrome_profiles', exist_ok=True)
     os.makedirs('templates', exist_ok=True)
     
-    app.run(host='0.0.0.0', port=5000, debug=False)
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port, debug=False)
