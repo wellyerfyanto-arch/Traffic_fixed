@@ -140,4 +140,84 @@ class TrafficActions:
         ad_selectors = [
             "a[href*='googleadservices']",
             "[data-ad-client]",
-            ".adsbygoogle
+            ".adsbygoogle",
+            ".ad-container",
+            ".ad-unit",
+            "[id*='ad']",
+            "[class*='ad']"
+        ]
+        
+        for selector in ad_selectors:
+            try:
+                ads = self.driver.find_elements(By.CSS_SELECTOR, selector)
+                if ads:
+                    # Filter visible ads
+                    visible_ads = [ad for ad in ads if ad.is_displayed()]
+                    if visible_ads:
+                        ad_to_click = random.choice(visible_ads)
+                        
+                        # Store current window
+                        original_window = self.driver.current_window_handle
+                        
+                        # Click ad (opens in new tab)
+                        ad_to_click.click()
+                        time.sleep(3)
+                        
+                        # Switch to new tab if opened
+                        if len(self.driver.window_handles) > 1:
+                            self.driver.switch_to.window(self.driver.window_handles[-1])
+                            
+                            # Stay on ad page for a bit
+                            time.sleep(random.randint(5, 15))
+                            
+                            # Close ad tab and return to original
+                            self.driver.close()
+                            self.driver.switch_to.window(original_window)
+                        
+                        break
+                        
+            except Exception as e:
+                print(f"Error clicking ad: {e}")
+                continue
+    
+    def navigate_home(self):
+        """Navigate to home page"""
+        try:
+            # Try to find home button or logo
+            home_selectors = [
+                "a[href='/']",
+                ".home",
+                ".logo",
+                "header a",
+                "nav a:first-child"
+            ]
+            
+            for selector in home_selectors:
+                try:
+                    home_btn = self.driver.find_element(By.CSS_SELECTOR, selector)
+                    if home_btn.is_displayed():
+                        home_btn.click()
+                        time.sleep(3)
+                        self.handle_popups()
+                        return
+                except:
+                    continue
+            
+            # Fallback: go to root URL
+            current_url = self.driver.current_url
+            base_url = '/'.join(current_url.split('/')[:3])
+            self.driver.get(base_url)
+            time.sleep(3)
+            
+        except Exception as e:
+            print(f"Error navigating home: {e}")
+    
+    def clear_cache(self):
+        """Clear browser cache and data"""
+        try:
+            # Clear cookies and local storage
+            self.driver.execute_script("window.localStorage.clear();")
+            self.driver.execute_script("window.sessionStorage.clear();")
+            self.driver.delete_all_cookies()
+        except Exception as e:
+            print(f"Error clearing cache: {e}")
