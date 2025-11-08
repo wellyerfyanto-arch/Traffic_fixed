@@ -5,7 +5,7 @@ services:
     plan: free
     buildCommand: |
       pip install -r requirements.txt
-      mkdir -p chrome_profiles
+      mkdir -p templates chrome_profiles
     startCommand: python app.py
     envVars:
       - key: CHROME_MAX_PROFILES
