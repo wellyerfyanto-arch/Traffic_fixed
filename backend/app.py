@@ -1,17 +1,10 @@
-from flask import Flask, render_template, request, jsonify, send_file
-from flask_cors import CORS
+from flask import Flask, render_template, request, jsonify
 import json
 import os
-import threading
 import time
 from datetime import datetime
-from models.profile_manager import ProfileManager
-from services.browser_controller import BrowserController
-from services.traffic_actions import TrafficActions
-from config.settings import CHROME_MAX_PROFILES, MIN_VISIT_TIME, MAX_VISIT_TIME
 
 app = Flask(__name__)
-CORS(app)
 
 # Global system state
 system_state = {
@@ -76,17 +69,13 @@ def start_system():
         if not target_url:
             return jsonify({'status': 'error', 'message': 'Target URL is required'}), 400
         
-        # Start system in background thread
+        # Start system
         system_state['running'] = True
         system_state['start_time'] = datetime.now().isoformat()
         system_state['current_session'] = {
             'target_url': target_url,
             'profiles_count': profiles_count
         }
-        
-        thread = threading.Thread(target=run_traffic_system, args=(target_url, profiles_count))
-        thread.daemon = True
-        thread.start()
         
         return jsonify({'status': 'success', 'message': 'Traffic system started'})
     except Exception as e:
@@ -104,6 +93,11 @@ def stop_system():
 @app.route('/api/system/status', methods=['GET'])
 def get_system_status():
     try:
+        # Simulate some stats for demo
+        if system_state['running']:
+            system_state['active_profiles'] = 3
+            system_state['total_visits'] += 1
+            
         return jsonify({
             'status': 'success',
             'system_state': system_state
@@ -117,9 +111,15 @@ def generate_profiles():
         data = request.json
         count = data.get('count', 10)
         
-        profile_manager = ProfileManager()
-        # This will generate profiles on demand
-        profiles = profile_manager.profiles[:count]
+        # Simulate profile generation
+        profiles = []
+        for i in range(min(count, 10)):
+            profiles.append({
+                'id': i + 1,
+                'name': f'profile_{i+1:03d}',
+                'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+                'status': 'Ready'
+            })
         
         return jsonify({
             'status': 'success', 
@@ -146,63 +146,9 @@ def test_proxies():
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)}), 500
 
-def run_traffic_system(target_url, profiles_count):
-    """Background function to run traffic system"""
-    profile_manager = ProfileManager()
-    
-    while system_state['running']:
-        try:
-            # Run sessions for each profile
-            for i in range(min(profiles_count, len(profile_manager.profiles))):
-                if not system_state['running']:
-                    break
-                    
-                run_traffic_session(i, target_url)
-                system_state['total_visits'] += 1
-                
-                # Stagger between profiles
-                time.sleep(10)
-            
-            # Wait before next cycle
-            if system_state['running']:
-                time.sleep(3600)  # 1 hour between cycles
-                
-        except Exception as e:
-            print(f"Error in traffic system: {e}")
-            time.sleep(60)
-
-def run_traffic_session(profile_index, target_url):
-    """Run traffic session for a single profile"""
-    try:
-        profile_manager = ProfileManager()
-        profile = profile_manager.get_profile(profile_index)
-        
-        if not profile:
-            return
-        
-        browser = BrowserController(profile)
-        
-        if browser.start_browser():
-            # Check data leak
-            if browser.check_data_leak():
-                traffic = TrafficActions(browser)
-                
-                # Execute traffic actions
-                if traffic.search_and_open_url(target_url):
-                    traffic.handle_popups()
-                    traffic.random_scroll(MIN_VISIT_TIME, MAX_VISIT_TIME)
-                    traffic.slow_scroll(20)
-                    traffic.click_random_ads()
-                    traffic.navigate_home()
-                    traffic.clear_cache()
-            
-            browser.close_browser()
-            
-    except Exception as e:
-        print(f"Error in session {profile_index}: {e}")
-
 if __name__ == '__main__':
-    # Ensure profiles directory exists
+    # Ensure directories exist
     os.makedirs('chrome_profiles', exist_ok=True)
+    os.makedirs('templates', exist_ok=True)
     
     app.run(host='0.0.0.0', port=5000, debug=False)
