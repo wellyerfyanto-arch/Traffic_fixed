@@ -1033,6 +1033,66 @@
             // Initial stats load
             refreshStats();
         });
+        // Tambahkan di bagian script
+async function testSystem() {
+    try {
+        const response = await fetch('/api/proxy/test', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        });
+        
+        const data = await response.json();
+        showNotification('System test completed: ' + data.message, 'success');
+    } catch (error) {
+        showNotification('Test failed: ' + error.message, 'error');
+    }
+}
+
+async function getDebugInfo() {
+    try {
+        const response = await fetch('/api/debug/info');
+        const data = await response.json();
+        
+        if (data.status === 'success') {
+            document.getElementById('debugContent').textContent = JSON.stringify(data.debug_info, null, 2);
+            document.getElementById('debugInfo').style.display = 'block';
+        } else {
+            showNotification('Error getting debug info: ' + data.message, 'error');
+        }
+    } catch (error) {
+        showNotification('Debug info failed: ' + error.message, 'error');
+    }
+}
+
+function clearStats() {
+    document.getElementById('activeProfiles').textContent = '0';
+    document.getElementById('totalVisits').textContent = '0';
+    document.getElementById('runningTime').textContent = '0h 0m';
+    showNotification('Stats cleared', 'info');
+}
+
+// Update refreshStats function untuk lebih detail
+async function refreshStats() {
+    try {
+        const response = await fetch('/api/system/status');
+        const data = await response.json();
+        
+        if (data.status === 'success') {
+            updateDashboard(data.system_state);
+            
+            // Show more detailed status
+            const statusElement = document.getElementById('systemStatusText');
+            if (data.system_state.last_error) {
+                statusElement.innerHTML = `Running <small style="color: red;">(Error: ${data.system_state.last_error})</small>`;
+            }
+        }
+    } catch (error) {
+        console.error('Error refreshing stats:', error);
+        document.getElementById('systemStatusText').innerHTML = 'Stopped <small style="color: red;">(Connection Error)</small>';
+    }
+        }
     </script>
 </body>
 </html>
