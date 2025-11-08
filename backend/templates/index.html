@@ -385,7 +385,20 @@
                 <button class="btn btn-success" onclick="saveProfilesConfig()">💾 Save Profiles</button>
             </div>
         </div>
-        
+        <!-- Tambahkan di bagian Advanced tab atau buat tab Debug -->
+<div class="form-group">
+    <label>Debug Tools</label>
+    <div class="button-group">
+        <button class="btn" onclick="testSystem()">🧪 Test System</button>
+        <button class="btn" onclick="getDebugInfo()">🐛 Debug Info</button>
+        <button class="btn" onclick="clearStats()">🔄 Clear Stats</button>
+    </div>
+</div>
+
+<div id="debugInfo" style="display: none; background: #f8f9fa; padding: 15px; border-radius: 5px; margin-top: 10px;">
+    <h4>Debug Information:</h4>
+    <pre id="debugContent"></pre>
+</div>
         <!-- Traffic Settings Tab -->
         <div id="traffic" class="tab-content">
             <h2>Traffic Behavior Settings</h2>
@@ -403,6 +416,7 @@
                     <option value="referral">Use Referral Links</option>
                 </select>
             </div>
+            
             
             <div class="form-group">
                 <label>Visit Duration (seconds)</label>
@@ -427,6 +441,8 @@
                     Click Google Ads Randomly
                 </label>
             </div>
+
+
             
             <div class="form-group">
                 <label>
@@ -446,6 +462,8 @@
                 <button class="btn btn-success" onclick="saveTrafficConfig()">💾 Save Traffic Settings</button>
             </div>
         </div>
+
+        
         
         <!-- Proxy & VPN Tab -->
         <div id="proxy" class="tab-content">
