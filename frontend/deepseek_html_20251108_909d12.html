@@ -1,0 +1,1020 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auto Traffic System - Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .nav-tabs {
+            display: flex;
+            background: #34495e;
+            border-bottom: 3px solid #2980b9;
+            flex-wrap: wrap;
+        }
+        
+        .nav-tab {
+            padding: 15px 25px;
+            color: white;
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            flex: 1;
+            min-width: 120px;
+        }
+        
+        .nav-tab:hover {
+            background: #2980b9;
+        }
+        
+        .nav-tab.active {
+            background: #2980b9;
+            border-bottom: 3px solid #e74c3c;
+        }
+        
+        .tab-content {
+            display: none;
+            padding: 30px;
+        }
+        
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #bdc3c7;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+        
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin: 5px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(52, 152, 219, 0.3);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #27ae60, #229954);
+        }
+        
+        .config-card {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-left: 5px solid #3498db;
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        
+        .status-active {
+            background: #27ae60;
+            animation: pulse 2s infinite;
+        }
+        
+        .status-inactive {
+            background: #e74c3c;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        
+        .profile-item {
+            background: white;
+            border: 2px solid #ecf0f1;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: #ecf0f1;
+            border-radius: 5px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #27ae60, #229954);
+            transition: width 0.3s ease;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 5px;
+            color: white;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            min-width: 300px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            animation: slideIn 0.3s ease;
+        }
+        
+        .notification-success { background: #27ae60; }
+        .notification-error { background: #e74c3c; }
+        .notification-info { background: #3498db; }
+        
+        .notification button {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateX(100%); }
+            to { transform: translateX(0); }
+        }
+        
+        @media (max-width: 768px) {
+            .nav-tabs {
+                flex-direction: column;
+            }
+            
+            .nav-tab {
+                flex: none;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .button-group {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+                margin: 5px 0;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 1.8em;
+            }
+            
+            .tab-content {
+                padding: 20px 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🤖 Auto Traffic System</h1>
+            <p>Automated Chrome Profile Management & Traffic Generation</p>
+        </div>
+        
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="openTab('dashboard')">📊 Dashboard</button>
+            <button class="nav-tab" onclick="openTab('profiles')">👥 Chrome Profiles</button>
+            <button class="nav-tab" onclick="openTab('traffic')">🚦 Traffic Settings</button>
+            <button class="nav-tab" onclick="openTab('proxy')">🌐 Proxy & VPN</button>
+            <button class="nav-tab" onclick="openTab('advanced')">⚙️ Advanced</button>
+        </div>
+        
+        <!-- Dashboard Tab -->
+        <div id="dashboard" class="tab-content active">
+            <h2>System Dashboard</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number" id="activeProfiles">0</div>
+                    <div>Active Profiles</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="totalVisits">0</div>
+                    <div>Total Visits</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="successRate">0%</div>
+                    <div>Success Rate</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="runningTime">0h 0m</div>
+                    <div>Running Time</div>
+                </div>
+            </div>
+            
+            <div class="config-card">
+                <h3>System Status</h3>
+                <p><span class="status-indicator" id="systemStatusIndicator"></span> 
+                   System: <span id="systemStatusText">Stopped</span></p>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="systemProgress" style="width: 0%"></div>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="quickStartUrl">Quick Start URL</label>
+                <input type="url" id="quickStartUrl" placeholder="https://example.com">
+            </div>
+            
+            <div class="button-group">
+                <button class="btn btn-success" onclick="startSystem()">▶ Start System</button>
+                <button class="btn btn-danger" onclick="stopSystem()">⏹ Stop System</button>
+                <button class="btn" onclick="refreshStats()">🔄 Refresh</button>
+            </div>
+        </div>
+        
+        <!-- Profiles Tab -->
+        <div id="profiles" class="tab-content">
+            <h2>Chrome Profiles Management</h2>
+            
+            <div class="form-group">
+                <label for="maxProfiles">Maximum Chrome Profiles (1-100)</label>
+                <input type="number" id="maxProfiles" min="1" max="100" value="10">
+            </div>
+            
+            <div class="form-group">
+                <label for="gmailLogin">Gmail Login Method</label>
+                <select id="gmailLogin">
+                    <option value="manual">Manual Input per Profile</option>
+                    <option value="auto">Auto-generate Accounts</option>
+                    <option value="none">No Login (Guest Mode)</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="userAgentMode">User Agent Strategy</label>
+                <select id="userAgentMode">
+                    <option value="random">Random User Agents</option>
+                    <option value="realistic">Realistic Device Rotation</option>
+                    <option value="custom">Custom List</option>
+                </select>
+            </div>
+            
+            <div id="profilesList" class="form-group">
+                <!-- Profiles will be dynamically generated here -->
+            </div>
+            
+            <div class="button-group">
+                <button class="btn" onclick="generateProfiles()">🔄 Generate Profiles</button>
+                <button class="btn btn-success" onclick="saveProfilesConfig()">💾 Save Profiles</button>
+            </div>
+        </div>
+        
+        <!-- Traffic Settings Tab -->
+        <div id="traffic" class="tab-content">
+            <h2>Traffic Behavior Settings</h2>
+            
+            <div class="form-group">
+                <label for="targetUrl">Target URL Website</label>
+                <input type="url" id="targetUrl" placeholder="https://example.com">
+            </div>
+            
+            <div class="form-group">
+                <label for="visitStrategy">Visit Strategy</label>
+                <select id="visitStrategy">
+                    <option value="direct">Direct to URL</option>
+                    <option value="search">Search Google First</option>
+                    <option value="referral">Use Referral Links</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>Visit Duration (seconds)</label>
+                <div style="display: flex; gap: 10px;">
+                    <input type="number" id="minVisitTime" placeholder="Min" value="30" min="10">
+                    <input type="number" id="maxVisitTime" placeholder="Max" value="120" min="30">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="scrollBehavior">Scroll Behavior</label>
+                <select id="scrollBehavior">
+                    <option value="random">Random Scroll Pattern</option>
+                    <option value="slow">Slow Continuous Scroll</option>
+                    <option value="human">Human-like Behavior</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>
+                    <input type="checkbox" id="clickAds" checked>
+                    Click Google Ads Randomly
+                </label>
+            </div>
+            
+            <div class="form-group">
+                <label>
+                    <input type="checkbox" id="handlePopups" checked>
+                    Auto-handle Popups & Notifications
+                </label>
+            </div>
+            
+            <div class="form-group">
+                <label>
+                    <input type="checkbox" id="clearCache" checked>
+                    Clear Cache After Each Session
+                </label>
+            </div>
+            
+            <div class="button-group">
+                <button class="btn btn-success" onclick="saveTrafficConfig()">💾 Save Traffic Settings</button>
+            </div>
+        </div>
+        
+        <!-- Proxy & VPN Tab -->
+        <div id="proxy" class="tab-content">
+            <h2>Proxy & VPN Configuration</h2>
+            
+            <div class="form-group">
+                <label for="proxyType">Proxy Type</label>
+                <select id="proxyType">
+                    <option value="none">No Proxy</option>
+                    <option value="premium">Premium Proxy</option>
+                    <option value="vpn">VPN Service</option>
+                    <option value="custom">Custom Proxy List</option>
+                </select>
+            </div>
+            
+            <div id="proxyConfig" style="display: none;">
+                <div class="form-group">
+                    <label for="proxyList">Proxy List (IP:Port:Username:Password)</label>
+                    <textarea id="proxyList" rows="6" placeholder="192.168.1.1:8080:user:pass&#10;192.168.1.2:8080:user:pass"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="proxyRotation">Proxy Rotation Strategy</label>
+                    <select id="proxyRotation">
+                        <option value="roundrobin">Round Robin</option>
+                        <option value="random">Random</option>
+                        <option value="sticky">Sticky (per profile)</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="leakTest">Data Leak Test URL</label>
+                <input type="url" id="leakTest" value="https://api.ipify.org" placeholder="URL untuk test kebocoran data">
+            </div>
+            
+            <div class="form-group">
+                <label>
+                    <input type="checkbox" id="verifyLocation" checked>
+                    Verify IP Location Match
+                </label>
+            </div>
+            
+            <div class="button-group">
+                <button class="btn" onclick="testProxies()">🧪 Test All Proxies</button>
+                <button class="btn btn-success" onclick="saveProxyConfig()">💾 Save Proxy Settings</button>
+            </div>
+        </div>
+        
+        <!-- Advanced Tab -->
+        <div id="advanced" class="tab-content">
+            <h2>Advanced Configuration</h2>
+            
+            <div class="form-group">
+                <label for="requestDelay">Request Delay (seconds)</label>
+                <input type="number" id="requestDelay" value="2" min="1" max="10">
+            </div>
+            
+            <div class="form-group">
+                <label for="maxRetries">Maximum Retries on Failure</label>
+                <input type="number" id="maxRetries" value="3" min="1" max="10">
+            </div>
+            
+            <div class="form-group">
+                <label for="timeout">Page Load Timeout (seconds)</label>
+                <input type="number" id="timeout" value="30" min="10" max="120">
+            </div>
+            
+            <div class="form-group">
+                <label for="sessionInterval">Session Interval (minutes)</label>
+                <input type="number" id="sessionInterval" value="60" min="10" max="1440">
+            </div>
+            
+            <div class="form-group">
+                <label>
+                    <input type="checkbox" id="headlessMode">
+                    Run in Headless Mode (No GUI)
+                </label>
+            </div>
+            
+            <div class="form-group">
+                <label>
+                    <input type="checkbox" id="debugMode">
+                    Enable Debug Logging
+                </label>
+            </div>
+            
+            <div class="form-group">
+                <label>Export/Import Configuration</label>
+                <div class="button-group">
+                    <button class="btn" onclick="exportConfig()">📤 Export JSON</button>
+                    <button class="btn" onclick="importConfig()">📥 Import JSON</button>
+                </div>
+            </div>
+            
+            <input type="file" id="configFile" style="display: none;" accept=".json">
+            
+            <div class="button-group">
+                <button class="btn btn-success" onclick="saveAdvancedConfig()">💾 Save Advanced Settings</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let systemState = {
+            running: false,
+            activeProfiles: 0,
+            totalVisits: 0,
+            successRate: 0,
+            runningTime: '0h 0m'
+        };
+
+        // API Base URL - relative path for same domain
+        const API_BASE = '/api';
+
+        // Tab navigation
+        function openTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Remove active class from all buttons
+            document.querySelectorAll('.nav-tab').forEach(button => {
+                button.classList.remove('active');
+            });
+            
+            // Show selected tab
+            document.getElementById(tabName).classList.add('active');
+            
+            // Add active class to clicked button
+            event.currentTarget.classList.add('active');
+            
+            // Special handling for profiles tab
+            if (tabName === 'profiles') {
+                updateProfilesList();
+            }
+        }
+        
+        // Proxy type toggle
+        document.getElementById('proxyType').addEventListener('change', function() {
+            const proxyConfig = document.getElementById('proxyConfig');
+            proxyConfig.style.display = this.value === 'none' ? 'none' : 'block';
+        });
+
+        // System control functions
+        async function startSystem() {
+            const url = document.getElementById('quickStartUrl').value;
+            
+            if (!url) {
+                showNotification('Please enter a target URL', 'error');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE}/system/start`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        target_url: url,
+                        profiles_count: 5
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    showNotification('System started successfully!', 'success');
+                    updateSystemStatus(true);
+                } else {
+                    showNotification('Error: ' + data.message, 'error');
+                }
+            } catch (error) {
+                showNotification('Error starting system: ' + error.message, 'error');
+            }
+        }
+
+        async function stopSystem() {
+            try {
+                const response = await fetch(`${API_BASE}/system/stop`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    showNotification('System stopped successfully!', 'success');
+                    updateSystemStatus(false);
+                } else {
+                    showNotification('Error: ' + data.message, 'error');
+                }
+            } catch (error) {
+                showNotification('Error stopping system: ' + error.message, 'error');
+            }
+        }
+
+        async function refreshStats() {
+            try {
+                const response = await fetch(`${API_BASE}/system/status`);
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    updateDashboard(data.system_state);
+                }
+            } catch (error) {
+                console.error('Error refreshing stats:', error);
+            }
+        }
+
+        // Update dashboard with current data
+        function updateDashboard(state) {
+            systemState = state;
+            
+            // Update DOM elements
+            document.getElementById('activeProfiles').textContent = state.active_profiles || 0;
+            document.getElementById('totalVisits').textContent = state.total_visits || 0;
+            document.getElementById('runningTime').textContent = calculateRunningTime(state.start_time);
+            
+            // Update system status
+            updateSystemStatus(state.running);
+        }
+
+        function updateSystemStatus(isRunning) {
+            const indicator = document.getElementById('systemStatusIndicator');
+            const statusText = document.getElementById('systemStatusText');
+            const progressBar = document.getElementById('systemProgress');
+            
+            if (isRunning) {
+                indicator.className = 'status-indicator status-active';
+                statusText.textContent = 'Running';
+                progressBar.style.width = '75%';
+            } else {
+                indicator.className = 'status-indicator status-inactive';
+                statusText.textContent = 'Stopped';
+                progressBar.style.width = '0%';
+            }
+        }
+
+        function calculateRunningTime(startTimeStr) {
+            if (!startTimeStr) return "0h 0m";
+            
+            try {
+                const startTime = new Date(startTimeStr);
+                const currentTime = new Date();
+                const duration = currentTime - startTime;
+                
+                const hours = Math.floor(duration / (1000 * 60 * 60));
+                const minutes = Math.floor((duration % (1000 * 60 * 60)) / (1000 * 60));
+                
+                return `${hours}h ${minutes}m`;
+            } catch {
+                return "0h 0m";
+            }
+        }
+
+        // Initialize profiles list
+        function updateProfilesList() {
+            const maxProfiles = parseInt(document.getElementById('maxProfiles').value) || 10;
+            const profilesList = document.getElementById('profilesList');
+            
+            let html = '<h3>Generated Profiles (' + maxProfiles + ')</h3>';
+            
+            for (let i = 1; i <= maxProfiles; i++) {
+                html += `
+                    <div class="profile-item">
+                        <div>
+                            <strong>Profile ${i}</strong>
+                            <br><small>User Agent: Random • Status: Ready</small>
+                        </div>
+                        <div>
+                            <button class="btn" onclick="testProfile(${i})">Test</button>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            profilesList.innerHTML = html;
+        }
+
+        // Configuration management
+        async function generateProfiles() {
+            const maxProfiles = document.getElementById('maxProfiles').value;
+            
+            try {
+                const response = await fetch(`${API_BASE}/profiles/generate`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        count: parseInt(maxProfiles)
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    showNotification(data.message, 'success');
+                    updateProfilesList();
+                } else {
+                    showNotification('Error: ' + data.message, 'error');
+                }
+            } catch (error) {
+                showNotification('Error generating profiles: ' + error.message, 'error');
+            }
+        }
+
+        async function saveProfilesConfig() {
+            const config = {
+                maxProfiles: parseInt(document.getElementById('maxProfiles').value) || 10,
+                gmailLogin: document.getElementById('gmailLogin').value,
+                userAgentMode: document.getElementById('userAgentMode').value
+            };
+            
+            const success = await saveConfig('profiles', config);
+            if (success) {
+                showNotification('Profiles configuration saved!', 'success');
+            }
+        }
+
+        async function saveTrafficConfig() {
+            const config = {
+                targetUrl: document.getElementById('targetUrl').value,
+                visitStrategy: document.getElementById('visitStrategy').value,
+                minVisitTime: parseInt(document.getElementById('minVisitTime').value) || 30,
+                maxVisitTime: parseInt(document.getElementById('maxVisitTime').value) || 120,
+                scrollBehavior: document.getElementById('scrollBehavior').value,
+                clickAds: document.getElementById('clickAds').checked,
+                handlePopups: document.getElementById('handlePopups').checked,
+                clearCache: document.getElementById('clearCache').checked
+            };
+            
+            const success = await saveConfig('traffic', config);
+            if (success) {
+                showNotification('Traffic configuration saved!', 'success');
+            }
+        }
+
+        async function saveProxyConfig() {
+            const config = {
+                proxyType: document.getElementById('proxyType').value,
+                proxyList: document.getElementById('proxyList').value,
+                proxyRotation: document.getElementById('proxyRotation').value,
+                leakTest: document.getElementById('leakTest').value,
+                verifyLocation: document.getElementById('verifyLocation').checked
+            };
+            
+            const success = await saveConfig('proxy', config);
+            if (success) {
+                showNotification('Proxy configuration saved!', 'success');
+            }
+        }
+
+        async function saveAdvancedConfig() {
+            const config = {
+                requestDelay: document.getElementById('requestDelay').value,
+                maxRetries: document.getElementById('maxRetries').value,
+                timeout: document.getElementById('timeout').value,
+                sessionInterval: document.getElementById('sessionInterval').value,
+                headlessMode: document.getElementById('headlessMode').checked,
+                debugMode: document.getElementById('debugMode').checked
+            };
+            
+            const success = await saveConfig('advanced', config);
+            if (success) {
+                showNotification('Advanced configuration saved!', 'success');
+            }
+        }
+
+        async function saveConfig(type, config) {
+            try {
+                const response = await fetch(`${API_BASE}/config/save`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        type: type,
+                        config: config
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    return true;
+                } else {
+                    showNotification('Error saving configuration: ' + data.message, 'error');
+                    return false;
+                }
+            } catch (error) {
+                showNotification('Error saving configuration: ' + error.message, 'error');
+                return false;
+            }
+        }
+
+        async function loadConfig() {
+            try {
+                const response = await fetch(`${API_BASE}/config/load`);
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    return data.config;
+                } else {
+                    showNotification('Error loading configuration: ' + data.message, 'error');
+                    return {};
+                }
+            } catch (error) {
+                showNotification('Error loading configuration: ' + error.message, 'error');
+                return {};
+            }
+        }
+
+        async function testProxies() {
+            try {
+                const response = await fetch(`${API_BASE}/proxy/test`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    showNotification(`Proxy test completed: ${data.results.working}/${data.results.total} working`, 'success');
+                } else {
+                    showNotification('Error: ' + data.message, 'error');
+                }
+            } catch (error) {
+                showNotification('Error testing proxies: ' + error.message, 'error');
+            }
+        }
+
+        function testProfile(profileId) {
+            showNotification('Testing profile ' + profileId + '...', 'info');
+        }
+
+        // Export configuration
+        async function exportConfig() {
+            const config = await loadConfig();
+            const dataStr = JSON.stringify(config, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(dataBlob);
+            link.download = 'traffic_system_config.json';
+            link.click();
+            
+            showNotification('Configuration exported successfully!', 'success');
+        }
+
+        // Import configuration
+        function importConfig() {
+            document.getElementById('configFile').click();
+        }
+
+        // Set up file input for import
+        document.getElementById('configFile').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        const config = JSON.parse(e.target.result);
+                        saveConfig('full', config).then(success => {
+                            if (success) {
+                                showNotification('Configuration imported successfully!', 'success');
+                                // Reload the configuration into the form
+                                loadConfigIntoForm(config);
+                            }
+                        });
+                    } catch (error) {
+                        showNotification('Error importing configuration: ' + error.message, 'error');
+                    }
+                };
+                reader.readAsText(file);
+            }
+        });
+
+        function loadConfigIntoForm(config) {
+            // Load profiles config
+            if (config.profiles) {
+                document.getElementById('maxProfiles').value = config.profiles.maxProfiles || 10;
+                document.getElementById('gmailLogin').value = config.profiles.gmailLogin || 'manual';
+                document.getElementById('userAgentMode').value = config.profiles.userAgentMode || 'random';
+                updateProfilesList();
+            }
+            
+            // Load traffic config
+            if (config.traffic) {
+                document.getElementById('targetUrl').value = config.traffic.targetUrl || '';
+                document.getElementById('visitStrategy').value = config.traffic.visitStrategy || 'search';
+                document.getElementById('minVisitTime').value = config.traffic.minVisitTime || 30;
+                document.getElementById('maxVisitTime').value = config.traffic.maxVisitTime || 120;
+                document.getElementById('scrollBehavior').value = config.traffic.scrollBehavior || 'random';
+                document.getElementById('clickAds').checked = config.traffic.clickAds !== false;
+                document.getElementById('handlePopups').checked = config.traffic.handlePopups !== false;
+                document.getElementById('clearCache').checked = config.traffic.clearCache !== false;
+            }
+            
+            // Load proxy config
+            if (config.proxy) {
+                document.getElementById('proxyType').value = config.proxy.proxyType || 'none';
+                document.getElementById('proxyList').value = config.proxy.proxyList || '';
+                document.getElementById('proxyRotation').value = config.proxy.proxyRotation || 'roundrobin';
+                document.getElementById('leakTest').value = config.proxy.leakTest || 'https://api.ipify.org';
+                document.getElementById('verifyLocation').checked = config.proxy.verifyLocation !== false;
+                
+                // Trigger proxy type change to show/hide config
+                document.getElementById('proxyType').dispatchEvent(new Event('change'));
+            }
+            
+            // Load advanced config
+            if (config.advanced) {
+                document.getElementById('requestDelay').value = config.advanced.requestDelay || 2;
+                document.getElementById('maxRetries').value = config.advanced.maxRetries || 3;
+                document.getElementById('timeout').value = config.advanced.timeout || 30;
+                document.getElementById('sessionInterval').value = config.advanced.sessionInterval || 60;
+                document.getElementById('headlessMode').checked = config.advanced.headlessMode || false;
+                document.getElementById('debugMode').checked = config.advanced.debugMode || false;
+            }
+        }
+
+        // Utility functions
+        function showNotification(message, type = 'info') {
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.className = `notification notification-${type}`;
+            notification.innerHTML = `
+                <span>${message}</span>
+                <button onclick="this.parentElement.remove()">×</button>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                if (notification.parentElement) {
+                    notification.remove();
+                }
+            }, 5000);
+        }
+
+        // Initialize application
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load initial configuration
+            loadConfig().then(config => {
+                loadConfigIntoForm(config);
+            });
+            
+            // Initialize profiles list
+            updateProfilesList();
+            
+            // Set up proxy type toggle
+            document.getElementById('proxyType').dispatchEvent(new Event('change'));
+            
+            // Start periodic stats refresh
+            setInterval(refreshStats, 5000);
+            
+            // Initial stats load
+            refreshStats();
+        });
+    </script>
+</body>
+</html>
