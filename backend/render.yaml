@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: auto-traffic-system
+    env: python
+    plan: free
+    buildCommand: |
+      pip install -r requirements.txt
+      mkdir -p chrome_profiles
+    startCommand: python app.py
+    envVars:
+      - key: CHROME_MAX_PROFILES
+        value: 10
+      - key: MIN_VISIT_TIME
+        value: 30
+      - key: MAX_VISIT_TIME
+        value: 120
+      - key: FLASK_ENV
+        value: production
