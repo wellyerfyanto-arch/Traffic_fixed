@@ -26,15 +26,17 @@ def index():
         return f"""
         <html>
             <head><title>Auto Traffic System</title></head>
-            <body>
+            <body style="font-family: Arial, sans-serif; padding: 20px;">
                 <h1>Auto Traffic System</h1>
-                <p>System is running. Template issue: {str(e)}</p>
-                <p>Current directory: {os.getcwd()}</p>
-                <p>Files in directory: {os.listdir('.')}</p>
-                <p>Templates exists: {os.path.exists('templates')}</p>
-                {% if os.path.exists('templates') %}
-                <p>Files in templates: {os.listdir('templates')}</p>
-                {% endif %}
+                <p>System is running successfully!</p>
+                <p>If you can see this message, the backend is working but there might be an issue with the template.</p>
+                <p>Error details: {str(e)}</p>
+                <div style="background: #f5f5f5; padding: 15px; border-radius: 5px; margin-top: 20px;">
+                    <h3>Debug Information:</h3>
+                    <p>Current directory: {os.getcwd()}</p>
+                    <p>Directory contents: {', '.join(os.listdir('.'))}</p>
+                    <p>Templates folder exists: {os.path.exists('templates')}</p>
+                </div>
             </body>
         </html>
         """, 500
