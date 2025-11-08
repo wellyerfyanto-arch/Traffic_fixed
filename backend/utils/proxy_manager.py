@@ -1,59 +1,19 @@
+import os
+import json
 import random
-import requests
-from utils.helpers import format_proxy
+from config.settings import PROFILES_DIR, USER_AGENTS
 
-class ProxyManager:
+class ProfileManager:
     def __init__(self):
-        self.proxies = []
-        self.current_index = 0
+        self.profiles = []
     
-    def load_proxies(self, proxy_list):
-        """Load proxies from list of strings"""
-        self.proxies = []
-        
-        for proxy_str in proxy_list:
-            proxy = format_proxy(proxy_str)
-            if proxy:
-                self.proxies.append(proxy)
-    
-    def get_next_proxy(self, strategy='roundrobin'):
-        """Get next proxy based on strategy"""
-        if not self.proxies:
-            return None
-        
-        if strategy == 'random':
-            return random.choice(self.proxies)
-        elif strategy == 'roundrobin':
-            proxy = self.proxies[self.current_index]
-            self.current_index = (self.current_index + 1) % len(self.proxies)
-            return proxy
-        else:  # sticky (always return first)
-            return self.proxies[0]
-    
-    def test_proxy(self, proxy, test_url="https://api.ipify.org?format=json"):
-        """Test if proxy is working"""
-        try:
-            proxies = {
-                'http': f"http://{proxy['username']}:{proxy['password']}@{proxy['host']}:{proxy['port']}",
-                'https': f"https://{proxy['username']}:{proxy['password']}@{proxy['host']}:{proxy['port']}"
+    def get_profile(self, profile_index):
+        """Get profile by index - simplified for demo"""
+        if 0 <= profile_index < 10:
+            return {
+                'id': profile_index + 1,
+                'name': f'profile_{profile_index+1:03d}',
+                'user_agent': random.choice(USER_AGENTS),
+                'proxy_enabled': False
             }
-            
-            response = requests.get(test_url, proxies=proxies, timeout=10)
-            return response.status_code == 200
-        except:
-            return False
-    
-    def test_all_proxies(self):
-        """Test all loaded proxies"""
-        results = {
-            'working': [],
-            'failed': []
-        }
-        
-        for proxy in self.proxies:
-            if self.test_proxy(proxy):
-                results['working'].append(proxy)
-            else:
-                results['failed'].append(proxy)
-        
-        return results
+        return None
